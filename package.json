@@ -1,0 +1,28 @@
+{
+  "name": "MMM-SmartFritz",
+  "version": "1.0.0",
+  "description": "Fritz!Box SmartHome Module for MagicMirror2",
+  "scripts": {
+    "buildScript" : "browserify lib.js -o fritzapi.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/artifactdev/MMM-SmartFritz.git"
+  },
+  "keywords": [
+    "MagicMirror",
+    "FritzBox",
+    "Smarthome",
+    "Temperature"
+  ],
+  "author": "fewieden",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/artifactdev/MMM-SmartFritz/issues"
+  },
+  "homepage": "https://github.com/artifactdev/MMM-SmartFritzr#readme",
+  "dependencies": {
+    "browserify": "^16.5.1",
+    "fritzapi": "^0.10.7"
+  }
+}

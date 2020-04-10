@@ -1,0 +1,24 @@
+.MMM-SmartFritz .logo {
+    margin-right: 5px;
+}
+
+.MMM-SmartFritz .centered {
+    text-align: center;
+}
+
+.MMM-SmartFritz .table {
+    border-spacing: 10px 0px;
+    border-collapse: separate;
+}
+
+.MMM-SmartFritz .table tr.red {
+    color: #FF8E99;
+}
+
+.MMM-SmartFritz .table tr.orange {
+    color: #FF9859;
+}
+
+.MMM-SmartFritz .table tr.green {
+    color: #90F487;
+}

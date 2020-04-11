@@ -6,6 +6,10 @@
     text-align: center;
 }
 
+.MMM-SmartFritz .right {
+    text-align: right;
+}
+
 .MMM-SmartFritz .table {
     border-spacing: 10px 0px;
     border-collapse: separate;
@@ -22,3 +26,44 @@
 .MMM-SmartFritz .table tr.green {
     color: #90F487;
 }
+
+.battery {
+    position: relative;
+    display: block;
+    width: 20px;
+    border: 1px solid #aaa;
+    height: 10px;
+    border-radius: 2px;
+  }
+
+  .battery span {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    height: 6px;
+    background-color: #aaa;
+    border-radius: 1px;
+  }
+
+  .battery:after {
+    content: '';
+    position: absolute;
+    right: -3px;
+    top: 2px;
+    width: 3px;
+    height: 6px;
+    background-color: #aaa;
+    border-radius: 2px;
+  }
+
+  .battery.red {
+    border: 1px solid #FF8E99;
+  }
+
+  .battery.red span {
+    background-color: #FF8E99;
+  }
+
+  .battery.red:after {
+    background-color: #FF8E99;
+  }

@@ -27,7 +27,7 @@ Module.register("MMM-SmartFritz", {
         setInterval(() => {
             this.intervalRun = true;
             this.updateDom();
-        }, 30000);
+        }, 300000);
         this.sendSocketNotification("CONFIG", this.config);
     },
 
@@ -36,6 +36,7 @@ Module.register("MMM-SmartFritz", {
 
         return f.getDeviceList().then(function(deviceList){
             var thermostats = [];
+            console.warn(deviceList)
             for (let index = 0; index < deviceList.length; index++) {
                 const device = deviceList[index];
                 if (device.functionbitmask === "320") {
@@ -58,16 +59,6 @@ Module.register("MMM-SmartFritz", {
 
     getDom: function () {
         var wrapper = document.createElement("div");
-        var header = document.createElement("header");
-        header.classList.add("align-left");
-        var logo = document.createElement("i");
-        logo.classList.add("fa", "logo");
-        header.appendChild(logo);
-        var name = document.createElement("span");
-        name.innerHTML = "SmartFritz";
-        header.appendChild(name);
-        wrapper.appendChild(header);
-
         var table = document.createElement("table");
         table.classList.add("small", "table", "align-left");
         table.appendChild(this.createLabelRow());
@@ -90,21 +81,28 @@ Module.register("MMM-SmartFritz", {
     createLabelRow: function () {
         var labelRow = document.createElement("tr");
 
-        var typeIconLabel = document.createElement("th");
-        typeIconLabel.classList.add("centered");
-        labelRow.appendChild(typeIconLabel);
+        var roomiconlabel = document.createElement("th");
+        var typeIcon = document.createElement("room");
+        typeIcon.classList.add("fa", "fa-home");
+        roomiconlabel.appendChild(typeIcon);
+        labelRow.appendChild(roomiconlabel);
 
-        var lineIconLabel = document.createElement("th");
-        lineIconLabel.classList.add("centered");
-        labelRow.appendChild(lineIconLabel);
+        var batteryLabel = document.createElement("th");
+        batteryLabel.classList.add("left");
+        var batteryIcon = document.createElement("batterystatus");
+        batteryLabel.appendChild(batteryIcon);
+        labelRow.appendChild(batteryLabel);
 
-        var directionIconLabel = document.createElement("th");
-        directionIconLabel.classList.add("centered");
-        labelRow.appendChild(directionIconLabel);
+        var temperatureLabel = document.createElement("th");
+        temperatureLabel.classList.add("right");
+        var temperatureIcon = document.createElement("temperaturestatus");
+        //typeIcon.classList.add("fa", "fa-lightbulb-o");
+        temperatureIcon.innerHTML = "Temperature";
+        temperatureLabel.appendChild(temperatureIcon);
+        labelRow.appendChild(temperatureLabel);
 
-        var timeIconLabel = document.createElement("th");
-        timeIconLabel.classList.add("centered");
-        labelRow.appendChild(timeIconLabel);
+        var lightsonlabel = document.createElement("th");
+        lightsonlabel.classList.add("centered");
 
         return labelRow;
     },
@@ -116,24 +114,29 @@ Module.register("MMM-SmartFritz", {
         type.classList.add("centered");
 
 
-        var line = document.createElement("td");
-        line.classList.add("centered");
-        line.innerHTML = data.name;
-        row.appendChild(line);
+        var room = document.createElement("td");
+        room.classList.add("left");
+        room.innerHTML = data.name;
+        row.appendChild(room);
 
-        var destination_name = data.battery + '%';
-        var towards = document.createElement("td");
-        towards.innerHTML = destination_name;
-        row.appendChild(towards);
-
-        var time = document.createElement("td");
-        time.classList.add("centered");
-        var timeValue = data.temperature;
-        if (timeValue === "") {
-            timeValue = 0;
+        var batteryItem = document.createElement("td");
+        var batteryIcon = document.createElement('i');
+        var batteryFiller = document.createElement('span');
+        batteryFiller.style.width = 'calc(' + data.battery + '% - 4px)';
+        if(data.battery < 5) {
+            batteryIcon.classList.add('red')
         }
-        time.innerHTML = timeValue + " °C";
-        row.appendChild(time);
+        batteryIcon.append(batteryFiller);
+        batteryIcon.classList.add('battery');
+
+        batteryItem.append(batteryIcon)
+        row.appendChild(batteryItem);
+
+        var temperature = document.createElement("td");
+        temperature.classList.add("right");
+        var temperatureValue = data.temperature;
+        temperature.innerHTML = temperatureValue + " °C";
+        row.appendChild(temperature);
         appendTo.appendChild(row);
     }
 });

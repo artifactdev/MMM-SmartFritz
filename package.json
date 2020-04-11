@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Fritz!Box SmartHome Module for MagicMirror2",
   "scripts": {
-    "buildScript" : "browserify lib.js -o fritzapi.js"
+    "buildScript": "browserify lib.js -o fritzapi.js"
   },
   "repository": {
     "type": "git",

@@ -23,59 +23,49 @@ Module.register("MMM-SmartFritz", {
 
     start: function () {
         Log.info("Starting module: " + this.name);
+        Log.info("Config for Module: " + this.name, this.config);
 
-        setInterval(() => {
-            this.intervalRun = true;
-            this.updateDom();
-        }, 300000);
         this.sendSocketNotification("CONFIG", this.config);
     },
 
-    getData: function () {
-        var f = new fritzApi.Fritz(this.config.user, this.config.password, this.config.address);
+    socketNotificationReceived: function(notification, payload) {
+        if (notification === "DEVICELIST") {
+            this.handleData(JSON.parse(payload));
+        }
+    },
 
-        return f.getDeviceList().then(function(deviceList){
-            var thermostats = [];
-            console.warn(deviceList)
-            for (let index = 0; index < deviceList.length; index++) {
-                const device = deviceList[index];
-                if (device.functionbitmask === "320") {
-                    console.log(device.name, device.battery, (parseFloat(device.temperature.celsius) / 10));
-                    var data = {
-                        name : device.name,
-                        battery : device.battery,
-                        temperature : (parseFloat(device.temperature.celsius) / 10)
-                    };
-                    thermostats.push(data);
-                    if (index === (deviceList.length - 1)) {
-                        return thermostats;
-                    }
-                }
-
+    handleData: function (deviceList) {
+        var thermostats = [];
+        console.warn(deviceList)
+        for (let index = 0; index < deviceList.length; index++) {
+            const device = deviceList[index];
+            if (device.functionbitmask === "320") {
+                //console.log(device.name, device.battery, (parseFloat(device.temperature.celsius) / 10));
+                var data = {
+                    name : device.name,
+                    battery : device.battery,
+                    temperature : (parseFloat(device.temperature.celsius) / 10)
+                };
+                thermostats.push(data);
             }
-        });
+        }
+        this.setDom(thermostats);
     },
 
 
-    getDom: function () {
+    setDom: function (data) {
+        console.warn('thermostats', data)
         var wrapper = document.createElement("div");
         var table = document.createElement("table");
         table.classList.add("small", "table", "align-left");
         table.appendChild(this.createLabelRow());
         wrapper.appendChild(table);
 
-        this.getData().then((data) => {
-            console.warn('thermostats', data)
-
-
-            for (var i = 0; i < data.length; i++) {
-                this.appendDataRow(data[i], table);
-            }
-
-        });
+        for (var i = 0; i < data.length; i++) {
+            this.appendDataRow(data[i], table);
+        }
 
         return wrapper;
-
     },
 
     createLabelRow: function () {

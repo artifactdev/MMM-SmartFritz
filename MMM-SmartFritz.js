@@ -6,6 +6,8 @@ Module.register("MMM-SmartFritz", {
         address: 'http://192.168.178.1'
     },
 
+	deviceData: [],
+
     getTranslations: function () {
         return {
             en: "translations/en.json",
@@ -23,59 +25,51 @@ Module.register("MMM-SmartFritz", {
 
     start: function () {
         Log.info("Starting module: " + this.name);
+        Log.info("Config for Module: " + this.name, this.config);
 
-        setInterval(() => {
-            this.intervalRun = true;
-            this.updateDom();
-        }, 300000);
         this.sendSocketNotification("CONFIG", this.config);
     },
 
-    getData: function () {
-        var f = new fritzApi.Fritz(this.config.user, this.config.password, this.config.address);
+    socketNotificationReceived: function(notification, payload) {
+        if (notification === "DEVICELIST") {
+			this.deviceData = JSON.parse(payload);
+            this.handleData();
+        }
+    },
 
-        return f.getDeviceList().then(function(deviceList){
-            var thermostats = [];
-            console.warn(deviceList)
-            for (let index = 0; index < deviceList.length; index++) {
-                const device = deviceList[index];
-                if (device.functionbitmask === "320") {
-                    console.log(device.name, device.battery, (parseFloat(device.temperature.celsius) / 10));
-                    var data = {
-                        name : device.name,
-                        battery : device.battery,
-                        temperature : (parseFloat(device.temperature.celsius) / 10)
-                    };
-                    thermostats.push(data);
-                    if (index === (deviceList.length - 1)) {
-                        return thermostats;
-                    }
-                }
-
+    handleData: function () {
+        var thermostats = [];
+        console.warn(this.deviceData)
+        for (let index = 0; index < this.deviceData.length; index++) {
+            const device = this.deviceData[index];
+            if (device.functionbitmask === "320") {
+                //console.log(device.name, device.battery, (parseFloat(device.temperature.celsius) / 10));
+                var data = {
+                    name : device.name,
+                    battery : device.battery,
+                    temperature : (parseFloat(device.temperature.celsius) / 10)
+                };
+                thermostats.push(data);
             }
-        });
+        }
+        this.getDom(thermostats);
+		this.updateDom();
     },
 
 
     getDom: function () {
+        console.warn('thermostats', this.deviceData)
         var wrapper = document.createElement("div");
         var table = document.createElement("table");
         table.classList.add("small", "table", "align-left");
         table.appendChild(this.createLabelRow());
         wrapper.appendChild(table);
 
-        this.getData().then((data) => {
-            console.warn('thermostats', data)
-
-
-            for (var i = 0; i < data.length; i++) {
-                this.appendDataRow(data[i], table);
-            }
-
-        });
+        for (var i = 0; i < this.deviceData.length; i++) {
+            this.appendDataRow(this.deviceData[i], table);
+        }
 
         return wrapper;
-
     },
 
     createLabelRow: function () {
@@ -134,9 +128,13 @@ Module.register("MMM-SmartFritz", {
 
         var temperature = document.createElement("td");
         temperature.classList.add("right");
-        var temperatureValue = data.temperature;
-        temperature.innerHTML = temperatureValue + " °C";
+        var temperatureValue = data.temperature.celsius;
+        temperature.innerHTML = this.formatTemperature(temperatureValue) + " °C";
         row.appendChild(temperature);
         appendTo.appendChild(row);
-    }
+    },
+
+	formatTemperature: function(str) {
+		return  str.substring(0, 2) + '.' + str.substring(2, str.length)
+	}
 });

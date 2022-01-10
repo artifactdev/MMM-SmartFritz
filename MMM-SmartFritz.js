@@ -6,6 +6,8 @@ Module.register("MMM-SmartFritz", {
         address: 'http://192.168.178.1'
     },
 
+	deviceData: [],
+
     getTranslations: function () {
         return {
             en: "translations/en.json",
@@ -30,15 +32,16 @@ Module.register("MMM-SmartFritz", {
 
     socketNotificationReceived: function(notification, payload) {
         if (notification === "DEVICELIST") {
-            this.handleData(JSON.parse(payload));
+			this.deviceData = JSON.parse(payload);
+            this.handleData();
         }
     },
 
-    handleData: function (deviceList) {
+    handleData: function () {
         var thermostats = [];
-        console.warn(deviceList)
-        for (let index = 0; index < deviceList.length; index++) {
-            const device = deviceList[index];
+        console.warn(this.deviceData)
+        for (let index = 0; index < this.deviceData.length; index++) {
+            const device = this.deviceData[index];
             if (device.functionbitmask === "320") {
                 //console.log(device.name, device.battery, (parseFloat(device.temperature.celsius) / 10));
                 var data = {
@@ -49,20 +52,21 @@ Module.register("MMM-SmartFritz", {
                 thermostats.push(data);
             }
         }
-        this.setDom(thermostats);
+        this.getDom(thermostats);
+		this.updateDom();
     },
 
 
-    setDom: function (data) {
-        console.warn('thermostats', data)
+    getDom: function () {
+        console.warn('thermostats', this.deviceData)
         var wrapper = document.createElement("div");
         var table = document.createElement("table");
         table.classList.add("small", "table", "align-left");
         table.appendChild(this.createLabelRow());
         wrapper.appendChild(table);
 
-        for (var i = 0; i < data.length; i++) {
-            this.appendDataRow(data[i], table);
+        for (var i = 0; i < this.deviceData.length; i++) {
+            this.appendDataRow(this.deviceData[i], table);
         }
 
         return wrapper;
@@ -124,9 +128,13 @@ Module.register("MMM-SmartFritz", {
 
         var temperature = document.createElement("td");
         temperature.classList.add("right");
-        var temperatureValue = data.temperature;
-        temperature.innerHTML = temperatureValue + " °C";
+        var temperatureValue = data.temperature.celsius;
+        temperature.innerHTML = this.formatTemperature(temperatureValue) + " °C";
         row.appendChild(temperature);
         appendTo.appendChild(row);
-    }
+    },
+
+	formatTemperature: function(str) {
+		return  str.substring(0, 2) + '.' + str.substring(2, str.length)
+	}
 });

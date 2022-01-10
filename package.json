@@ -1,6 +1,6 @@
 {
   "name": "MMM-SmartFritz",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Fritz!Box SmartHome Module for MagicMirror2",
   "scripts": {
     "buildScript": "browserify lib.js -o fritzapi.js"
@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/artifactdev/MMM-SmartFritzr#readme",
   "dependencies": {
-    "browserify": "^16.5.1",
-    "fritzapi": "^0.10.7"
+    "browserify": "^17.0.0",
+    "fritzapi": "^0.13.0"
   }
 }

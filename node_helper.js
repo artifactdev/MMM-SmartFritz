@@ -14,18 +14,22 @@ module.exports = NodeHelper.create({
 
 		var fritz = new Fritz(this.config.user, this.config.password, this.config.address);
 
-		fritz.getDeviceList().then(function(deviceList){
-			console.log('Fritz Devicelist', deviceList);
-			self.sendSocketNotification('DEVICELIST', JSON.stringify(deviceList));
-		});
+		fritz.start();
 
-		setTimeout(function() { self.getData(); }, this.config.updateInterval);
+		setTimeout(function() {
+			fritz.getDeviceList().then(function(deviceList){
+				console.log('Fritz Devicelist', deviceList);
+				self.sendSocketNotification('MMM-SMART-FRITZ-DEVICELIST', JSON.stringify(deviceList));
+			});
+		},2000)
+
+		setInterval(function() { self.getData(); }, this.config.updateInterval)
 	},
 
 	socketNotificationReceived: function(notification, payload) {
 		var self = this;
-		if (notification === 'CONFIG') {
-			console.log('Fritz COnfig received', payload);
+		if (notification === 'MMM-SMART-FRITZ-CONFIG') {
+			console.log('Fritz Config received', payload);
 			self.config = payload;
 			self.getData();
 		}

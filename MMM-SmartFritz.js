@@ -27,11 +27,11 @@ Module.register("MMM-SmartFritz", {
         Log.info("Starting module: " + this.name);
         Log.info("Config for Module: " + this.name, this.config);
 
-        this.sendSocketNotification("CONFIG", this.config);
+        this.sendSocketNotification("MMM-SMART-FRITZ-CONFIG", this.config);
     },
 
     socketNotificationReceived: function(notification, payload) {
-        if (notification === "DEVICELIST") {
+        if (notification === "MMM-SMART-FRITZ-DEVICELIST") {
 			this.deviceData = JSON.parse(payload);
             this.handleData();
         }

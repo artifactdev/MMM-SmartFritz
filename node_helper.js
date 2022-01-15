@@ -14,8 +14,6 @@ module.exports = NodeHelper.create({
 
 		var fritz = new Fritz(this.config.user, this.config.password, this.config.address);
 
-		fritz.start();
-
 		setTimeout(function() {
 			fritz.getDeviceList().then(function(deviceList){
 				console.log('Fritz Devicelist', deviceList);

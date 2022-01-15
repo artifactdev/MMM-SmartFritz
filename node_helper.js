@@ -15,18 +15,21 @@ module.exports = NodeHelper.create({
 
 		var fritz = undefined;
 
-		if (initialRun && !fritz) {
+		if (initialRun || !fritz) {
 			fritz = new Fritz(this.config.user, this.config.password, this.config.address);
-			fritz.getDeviceList().then(
-				function(deviceList){
-					console.log('Fritz Devicelist', deviceList);
-					self.sendSocketNotification('MMM-SMART-FRITZ-DEVICELIST', JSON.stringify(deviceList));
-				},
-			).catch((error) => {
-				console.error('MMM-FRITZ-ERROR',error);
-			  });
-			initialRun = false;
-			setInterval(function() { self.getData(); }, this.config.updateInterval)
+			// added timeout to get the connection stable first
+			setTimeout(function() {
+				fritz.getDeviceList().then(
+					function(deviceList){
+						console.log('Fritz Devicelist', deviceList);
+						self.sendSocketNotification('MMM-SMART-FRITZ-DEVICELIST', JSON.stringify(deviceList));
+					},
+				).catch((error) => {
+					console.error('MMM-FRITZ-ERROR',error);
+				});
+				setInterval(function() { self.getData(); }, this.config.updateInterval)
+				initialRun = false;
+			},1000)
 		} else {
 			fritz.getDeviceList().then(function(deviceList){
 				console.log('Fritz Devicelist', deviceList);
